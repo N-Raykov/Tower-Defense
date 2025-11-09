@@ -1,6 +1,5 @@
-// Basic tower implementation that periodically damages a single
-// enemy within range. Uses IEnemy as the integration point and
-// respects GameManager game state.
+// Tower that fires projectiles which explode in an area, damaging
+// multiple enemies at once.
 
 using UnityEngine;
 using TowerDefense.Enemies;
@@ -9,32 +8,27 @@ using TowerDefense.Managers;
 namespace TowerDefense.Towers
 {
     [RequireComponent(typeof(Collider2D))]
-    public class SingleTargetTower : MonoBehaviour, ITower
+    public class AoeTower : MonoBehaviour, ITower
     {
         [Header("Attack Settings")]
-        [SerializeField] private float range = 2.5f;
-        [SerializeField] private int damagePerShot = 2;
-        [SerializeField] private float shotsPerSecond = 1f;
+        [SerializeField] private float range = 3f;
+        [SerializeField] private float shotsPerSecond = 0.5f;
 
         [Header("Projectile Overrides")]
-        [SerializeField] private float projectileSpeed = 8f;
-        [SerializeField] private float projectileHitRadius = 0.1f;
-        [SerializeField] private float projectileHomingStrength = 0f; // 0 = bullet, >0 = homing bullet
-        [SerializeField] private float projectileMaxLifetime = 3f;
+        [SerializeField] private float projectileSpeed = 5f;
+        [SerializeField] private float projectileHitRadius = 0.15f;
+        [SerializeField] private float projectileHomingStrength = 0.8f; // nice rocket homing
+        [SerializeField] private float projectileMaxLifetime = 4f;
+        [SerializeField] private float projectileExplosionRadius = 1.5f;
+        [SerializeField] private int projectileExplosionDamage = 4;
 
 
         [Header("Targeting")]
-        [Tooltip("Layer mask used to find enemy colliders.")]
         [SerializeField] private LayerMask enemyLayerMask;
-
-        [Tooltip("Rotation offset in degrees so the sprite visually faces the shot direction.")]
         [SerializeField] private float rotationOffset = 0f;
 
         [Header("Projectile")]
-        [Tooltip("Projectile prefab to spawn when shooting.")]
         [SerializeField] private GameObject projectilePrefab;
-
-        [Tooltip("Where the projectile should spawn from. If null, uses the tower's position.")]
         [SerializeField] private Transform firePoint;
 
         [Header("Debug")]
@@ -42,12 +36,11 @@ namespace TowerDefense.Towers
 
         private float shotCooldown;
         private bool isActive = true;
-        private bool gameAllowsAttacking = true; // depends on GameState
+        private bool gameAllowsAttacking = true;
 
         private IEnemy currentTargetEnemy;
         private Transform currentTargetTransform;
 
-        // ITower implementation
         public float Range => range;
         public bool IsActive => isActive;
 
@@ -100,19 +93,15 @@ namespace TowerDefense.Towers
             }
 
             if (!isActive || !gameAllowsAttacking)
-            {
                 return;
-            }
 
             shotCooldown -= Time.deltaTime;
             if (shotCooldown > 0f)
-            {
                 return;
-            }
 
             if (currentTargetEnemy != null && currentTargetEnemy.IsAlive)
             {
-                ShootProjectileAtCurrentTarget();
+                ShootProjectile();
                 shotCooldown = 1f / Mathf.Max(shotsPerSecond, 0.01f);
             }
         }
@@ -152,46 +141,47 @@ namespace TowerDefense.Towers
             currentTargetTransform = bestTransform;
         }
 
-        private void ShootProjectileAtCurrentTarget()
+
+        private void ShootProjectile()
         {
             if (projectilePrefab == null)
             {
-                Debug.LogWarning("SingleTargetTower: No projectilePrefab assigned.");
+                Debug.LogWarning("AoeTower: projectilePrefab not assigned.");
                 return;
             }
 
             if (currentTargetEnemy == null || currentTargetTransform == null)
-            {
                 return;
-            }
 
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
 
             GameObject projGO = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-            Projectile projectile = projGO.GetComponent<Projectile>();
+            AoeProjectile proj = projGO.GetComponent<AoeProjectile>();
 
-            if (projectile == null)
+            if (proj == null)
             {
-                Debug.LogError("SingleTargetTower: Projectile prefab has no Projectile component.");
+                Debug.LogError("AoeTower: projectile prefab is missing AoeProjectile component.");
                 Destroy(projGO);
                 return;
             }
 
-            projectile.Initialize(
+            proj.Initialize(
                 currentTargetEnemy,
-                damagePerShot,
                 projectileSpeed,
                 projectileHitRadius,
                 projectileHomingStrength,
-                projectileMaxLifetime
+                projectileMaxLifetime,
+                projectileExplosionRadius,
+                projectileExplosionDamage
             );
         }
+
 
         private void OnDrawGizmosSelected()
         {
             if (!drawRangeGizmo) return;
 
-            Gizmos.color = Color.green;
+            Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, range);
         }
     }

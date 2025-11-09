@@ -133,7 +133,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b343398306554a84a835e4f652b39b65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  maxLifetime: 5
-  hitRadius: 0.1
+  defaultSpeed: 6
+  defaultMaxLifetime: 5
+  defaultHitRadius: 0.2
+  defaultHomingStrength: 0
+  turnRate: 8
   rotationOffset: 90

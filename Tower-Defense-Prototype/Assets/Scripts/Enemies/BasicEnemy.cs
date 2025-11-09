@@ -8,21 +8,40 @@ using TowerDefense.Managers;
 namespace TowerDefense.Enemies
 {
     [RequireComponent(typeof(EnemyMover))]
-    public class BasicEnemy : MonoBehaviour, IEnemy
+    public class BasicEnemy : MonoBehaviour, IEnemy, IBurnable, IPathEnemy
     {
         [Header("Stats")]
         [SerializeField] private int maxHealth = 10;
         [SerializeField] private int rewardGold = 5;
         [SerializeField] private int damageToBase = 1;
 
+        [Header("Burn Settings")]
+        [SerializeField] private bool canBeBurned = true;
+
+        [Header("Burn Visual")]
+        [SerializeField] private GameObject burnEffectPrefab;
+
+        private GameObject activeBurnEffect;
+
+
         [Header("Visuals")]
         [SerializeField] private SpriteRenderer spriteRenderer;
+        
 
         public bool IsAlive => currentHealth > 0;
 
         private int currentHealth;
         private EnemyMover mover;
         private bool hasNotifiedGoal;
+
+        // Burn state
+        private bool isBurning;
+        private int burnDamagePerTick;
+        private float burnRemainingTime;
+        private float burnTickInterval = 0.5f;
+        private float burnTickTimer;
+
+        public float PathProgress => mover != null ? mover.PathProgress : 0f;
 
         private void Awake()
         {
@@ -48,6 +67,41 @@ namespace TowerDefense.Enemies
             }
         }
 
+        private void Update()
+        {
+            UpdateBurn(Time.deltaTime);
+        }
+
+        private void UpdateBurn(float deltaTime)
+        {
+            if (!isBurning)
+                return;
+
+            burnRemainingTime -= deltaTime;
+            burnTickTimer -= deltaTime;
+
+            if (burnTickTimer <= 0f)
+            {
+                burnTickTimer = burnTickInterval;
+                if (burnDamagePerTick > 0)
+                {
+                    TakeDamage(burnDamagePerTick);
+                }
+            }
+
+            if (burnRemainingTime <= 0f)
+            {
+                isBurning = false;
+
+                if (activeBurnEffect != null)
+                {
+                    Destroy(activeBurnEffect);
+                    activeBurnEffect = null;
+                }
+            }
+
+        }
+
         public void TakeDamage(int amount)
         {
             if (amount < 0)
@@ -70,18 +124,42 @@ namespace TowerDefense.Enemies
             }
         }
 
-        private void Die()
+        public void ApplyBurn(int damagePerTick, float duration, float tickInterval)
         {
-            if (!IsAlive) 
-            {
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.AddGold(rewardGold);
-                }
+            if (!canBeBurned || damagePerTick <= 0 || duration <= 0f)
+                return;
 
-                Destroy(gameObject);
+            isBurning = true;
+
+            burnDamagePerTick = Mathf.Max(burnDamagePerTick, damagePerTick);
+            burnRemainingTime = Mathf.Max(burnRemainingTime, duration);
+            burnTickInterval = tickInterval > 0f ? tickInterval : burnTickInterval;
+            burnTickTimer = 0f;
+
+            // Visual: ensure burn effect is active
+            if (burnEffectPrefab != null && activeBurnEffect == null)
+            {
+                activeBurnEffect = Instantiate(burnEffectPrefab, transform);
+                activeBurnEffect.transform.localPosition = Vector3.zero;
             }
         }
+
+        private void Die()
+        {
+            if (activeBurnEffect != null)
+            {
+                Destroy(activeBurnEffect);
+                activeBurnEffect = null;
+            }
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.AddGold(rewardGold);
+            }
+
+            Destroy(gameObject);
+        }
+
 
         private void HandleReachedGoal(EnemyMover _)
         {

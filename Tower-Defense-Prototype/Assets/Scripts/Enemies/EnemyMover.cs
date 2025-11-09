@@ -25,6 +25,8 @@ namespace TowerDefense.Enemies
         private int currentWaypointIndex;
         private bool hasPath;
 
+        public float PathProgress { get; private set; }
+
         public event Action<EnemyMover> OnPathCompleted;
 
         private void Start()
@@ -84,12 +86,19 @@ namespace TowerDefense.Enemies
                 {
                     hasPath = false;
                     OnPathCompleted?.Invoke(this);
+                    return;
                 }
 
                 return;
             }
 
             transform.position = position + direction * distanceThisFrame;
+
+            if (hasPath && waypoints.Count > 1)
+            {
+                float segmentIndex = Mathf.Clamp(currentWaypointIndex, 0, waypoints.Count - 1);
+                PathProgress = segmentIndex / (waypoints.Count - 1f);
+            }
 
         }
     }

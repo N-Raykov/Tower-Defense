@@ -1,53 +1,68 @@
-﻿// Simple homing-ish projectile that flies toward a target enemy.
-// On reaching the target (or its last known position), it deals
-// damage and destroys itself.
-
+// Projectile that deals impact damage and applies a burning debuff
+// to enemies that implement IBurnable.
 
 using UnityEngine;
 using TowerDefense.Enemies;
 
 namespace TowerDefense.Towers
 {
-    public class Projectile : MonoBehaviour
+    public class DebuffProjectile : MonoBehaviour
     {
         [Header("Movement Defaults")]
         [SerializeField] private float defaultSpeed = 6f;
         [SerializeField] private float defaultMaxLifetime = 5f;
         [SerializeField] private float defaultHitRadius = 0.1f;
 
+        [Header("Burn Defaults")]
+        [SerializeField] private int defaultBurnDamagePerTick = 1;
+        [SerializeField] private float defaultBurnDuration = 3f;
+        [SerializeField] private float defaultBurnTickInterval = 0.5f;
+
+        private int burnDamagePerTick;
+        private float burnDuration;
+        private float burnTickInterval;
+
         [Header("Homing")]
-        [SerializeField] private float defaultHomingStrength = 0f; // 0 = straight, 1 = strong homing
-        [SerializeField] private float turnRate = 8f; // how fast it can turn
+        [SerializeField] private float defaultHomingStrength = 0f; 
+        [SerializeField] private float turnRate = 8f;
 
         [Header("Visual")]
         [SerializeField] private float rotationOffset = 0f;
 
-        // runtime values
         private float speed;
         private float maxLifetime;
         private float hitRadius;
         private float homingStrength;
         private Vector3 currentDirection;
 
-        private int damage;
+        private int impactDamage;
         private IEnemy targetEnemy;
         private Transform targetTransform;
         private Vector3 lastKnownTargetPos;
         private float lifeTimer;
 
-        public void Initialize(IEnemy target, int damage,
-                              float? speedOverride = null,
-                              float? hitRadiusOverride = null,
-                              float? homingOverride = null,
-                              float? maxLifetimeOverride = null)
+        public void Initialize(
+            IEnemy target,
+            int impactDamage,
+            float? speedOverride = null,
+            float? hitRadiusOverride = null,
+            float? homingOverride = null,
+            float? maxLifetimeOverride = null,
+            int? burnDamageOverride = null,
+            float? burnDurationOverride = null,
+            float? burnTickIntervalOverride = null)
         {
-            this.damage = damage;
+            this.impactDamage = impactDamage;
             targetEnemy = target;
 
             speed = speedOverride ?? defaultSpeed;
             hitRadius = hitRadiusOverride ?? defaultHitRadius;
             homingStrength = homingOverride ?? defaultHomingStrength;
             maxLifetime = maxLifetimeOverride ?? defaultMaxLifetime;
+
+            burnDamagePerTick = burnDamageOverride ?? defaultBurnDamagePerTick;
+            burnDuration = burnDurationOverride ?? defaultBurnDuration;
+            burnTickInterval = burnTickIntervalOverride ?? defaultBurnTickInterval;
 
             if (targetEnemy is Component c)
             {
@@ -57,10 +72,11 @@ namespace TowerDefense.Towers
             }
             else
             {
-                Debug.LogError("Projectile.Initialize: Target enemy is not a Component.");
+                Debug.LogError("DebuffProjectile.Initialize: Target is not a Component.");
                 Destroy(gameObject);
             }
         }
+
 
 
         private void Update()
@@ -110,11 +126,15 @@ namespace TowerDefense.Towers
         {
             if (targetEnemy != null && targetEnemy.IsAlive)
             {
-                targetEnemy.TakeDamage(damage);
+                targetEnemy.TakeDamage(impactDamage);
+
+                if (targetEnemy is IBurnable burnable)
+                {
+                    burnable.ApplyBurn(burnDamagePerTick, burnDuration, burnTickInterval);
+                }
             }
 
             Destroy(gameObject);
         }
     }
 }
-
