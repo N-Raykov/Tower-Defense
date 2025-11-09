@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5099924987017063178}
   - component: {fileID: 1601557766844354860}
   m_Layer: 6
-  m_Name: Enemy
+  m_Name: Enemy_Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -612460684, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  m_Sprite: {fileID: 197183277, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff39bd7644073bd40af5ad752197f631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  moveSpeed: 1.2
   waypointReachThreshold: 0.05
   rotationOffset: 0
   pathProvider: {fileID: 0}
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 684af95cbc32ae54f9d3e001a6061b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
-  rewardGold: 5
-  damageToBase: 1
+  maxHealth: 25
+  rewardGold: 10
+  damageToBase: 2
   spriteRenderer: {fileID: 5255189851867036648}

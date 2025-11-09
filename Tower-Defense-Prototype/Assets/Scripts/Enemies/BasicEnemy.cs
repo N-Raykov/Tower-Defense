@@ -40,6 +40,14 @@ namespace TowerDefense.Enemies
             }
         }
 
+        private void OnEnable()
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.RegisterEnemySpawned();
+            }
+        }
+
         public void TakeDamage(int amount)
         {
             if (amount < 0)
@@ -92,10 +100,16 @@ namespace TowerDefense.Enemies
 
         private void OnDestroy()
         {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.RegisterEnemyDestroyed();
+            }
+
             if (mover != null)
             {
                 mover.OnPathCompleted -= HandleReachedGoal;
             }
         }
+
     }
 }

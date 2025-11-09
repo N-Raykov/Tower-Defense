@@ -21,6 +21,9 @@ namespace TowerDefense.Enemies
 
         [Tooltip("Delay between each spawn of this enemy type.")]
         public float delayBetweenSpawns = 0.5f;
+
+        [Tooltip("Extra delay after finishing this group before the next group starts.")]
+        public float delayAfterGroup = 0f;
     }
 
     // Configuration asset for a single wave of enemies.

@@ -24,11 +24,22 @@ namespace TowerDefense.Managers
         [SerializeField] private int startingLives = 20;
         [SerializeField] private int startingGold = 100;
 
-        public GameState CurrentState { get; private set; } = GameState.BuildPhase;
+        [Header("Runtime Debug (read-only)")]
+        [SerializeField] private GameState currentState = GameState.BuildPhase;
+        [SerializeField] private int lives;
+        [SerializeField] private int gold;
+        [SerializeField] private int activeEnemies;
 
-        public int Lives { get; private set; }
 
-        public int Gold { get; private set; }
+        public GameState CurrentState => currentState;
+
+        public int Lives => lives;
+
+        public int Gold => gold;
+
+        public int ActiveEnemies => activeEnemies;
+
+        public event Action<int> OnActiveEnemiesChanged;
 
         // Events (observer-style) for other systems (UI, spawners, etc.).
         public event Action<GameState> OnGameStateChanged;
@@ -48,39 +59,43 @@ namespace TowerDefense.Managers
 
             InitializeGame();
         }
-
         private void InitializeGame()
         {
-            Lives = startingLives;
-            Gold = startingGold;
+            lives = startingLives;
+            gold = startingGold;
+            activeEnemies = 0;
 
-            OnLivesChanged?.Invoke(Lives);
-            OnGoldChanged?.Invoke(Gold);
+            OnLivesChanged?.Invoke(lives);
+            OnGoldChanged?.Invoke(gold);
+            OnActiveEnemiesChanged?.Invoke(activeEnemies);
 
-            // Start in build phase by default; can be changed later from a menu.
-            ChangeState(CurrentState);
+            ChangeState(currentState);
         }
+
+
 
         public void ChangeState(GameState newState)
         {
-            if (newState == CurrentState)
+            if (newState == currentState)
             {
                 return;
             }
 
-            CurrentState = newState;
-            OnGameStateChanged?.Invoke(CurrentState);
+            currentState = newState;
+            OnGameStateChanged?.Invoke(currentState);
         }
+
+
 
         public void AddGold(int amount)
         {
-            Gold += amount;
-            if (Gold < 0)
+            gold += amount;
+            if (gold < 0)
             {
-                Gold = 0;
+                gold = 0;
             }
 
-            OnGoldChanged?.Invoke(Gold);
+            OnGoldChanged?.Invoke(gold);
         }
 
         public bool TrySpendGold(int amount)
@@ -91,15 +106,34 @@ namespace TowerDefense.Managers
                 return false;
             }
 
-            if (Gold < amount)
+            if (gold < amount)
             {
                 return false;
             }
 
-            Gold -= amount;
-            OnGoldChanged?.Invoke(Gold);
+            gold -= amount;
+            OnGoldChanged?.Invoke(gold);
             return true;
         }
+
+
+
+        public void RegisterEnemySpawned()
+        {
+            activeEnemies++;
+            OnActiveEnemiesChanged?.Invoke(activeEnemies);
+        }
+
+        public void RegisterEnemyDestroyed()
+        {
+            if (activeEnemies > 0)
+            {
+                activeEnemies--;
+                OnActiveEnemiesChanged?.Invoke(activeEnemies);
+            }
+        }
+
+
 
         public void DamageBase(int amount)
         {
@@ -109,19 +143,20 @@ namespace TowerDefense.Managers
                 return;
             }
 
-            Lives -= amount;
-            if (Lives < 0)
+            lives -= amount;
+            if (lives < 0)
             {
-                Lives = 0;
+                lives = 0;
             }
 
-            OnLivesChanged?.Invoke(Lives);
+            OnLivesChanged?.Invoke(lives);
 
-            if (Lives <= 0 && CurrentState != GameState.GameOver)
+            if (lives <= 0 && currentState != GameState.GameOver)
             {
                 ChangeState(GameState.GameOver);
             }
         }
+
 
         public void HandleWaveCleared(bool hasMoreWaves)
         {
