@@ -1,9 +1,11 @@
 // Simple enemy implementation with health, reward gold, and
 // base damage on reaching the goal.
 
+using System;
 using UnityEngine;
 using TowerDefense.Enemies;
 using TowerDefense.Managers;
+using TowerDefense.UI;
 
 namespace TowerDefense.Enemies
 {
@@ -14,14 +16,23 @@ namespace TowerDefense.Enemies
         [SerializeField] private int maxHealth = 10;
         [SerializeField] private int rewardGold = 5;
         [SerializeField] private int damageToBase = 1;
+        public int MaxHealth => maxHealth;
+        public int CurrentHealth => currentHealth;
+
+        public event Action<int, int> OnHealthChanged;
 
         [Header("Burn Settings")]
         [SerializeField] private bool canBeBurned = true;
+
 
         [Header("Burn Visual")]
         [SerializeField] private GameObject burnEffectPrefab;
 
         private GameObject activeBurnEffect;
+
+        [Header("Gold Popup")]
+        [SerializeField] private GameObject goldPopupPrefab;
+
 
 
         [Header("Visuals")]
@@ -52,6 +63,7 @@ namespace TowerDefense.Enemies
             }
 
             currentHealth = maxHealth;
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
             if (spriteRenderer == null)
             {
@@ -99,7 +111,6 @@ namespace TowerDefense.Enemies
                     activeBurnEffect = null;
                 }
             }
-
         }
 
         public void TakeDamage(int amount)
@@ -120,7 +131,12 @@ namespace TowerDefense.Enemies
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
+                OnHealthChanged?.Invoke(currentHealth, maxHealth);
                 Die();
+            }
+            else
+            {
+                OnHealthChanged?.Invoke(currentHealth, maxHealth);
             }
         }
 
@@ -157,8 +173,19 @@ namespace TowerDefense.Enemies
                 GameManager.Instance.AddGold(rewardGold);
             }
 
+            if (goldPopupPrefab != null)
+            {
+                GameObject popup = Instantiate(goldPopupPrefab, transform.position, Quaternion.identity);
+                var popupScript = popup.GetComponent<GoldPopup>();
+                if (popupScript != null)
+                {
+                    popupScript.Initialize(rewardGold);
+                }
+            }
+
             Destroy(gameObject);
         }
+
 
 
         private void HandleReachedGoal(EnemyMover _)
@@ -175,6 +202,7 @@ namespace TowerDefense.Enemies
 
             Destroy(gameObject);
         }
+
 
         private void OnDestroy()
         {

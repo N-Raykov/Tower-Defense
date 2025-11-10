@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3819914351418936804}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,8 @@ GameObject:
   - component: {fileID: 7478058267819371618}
   - component: {fileID: 769026814616852861}
   - component: {fileID: 7446057412339248567}
-  m_Layer: 0
+  - component: {fileID: 3107546375585676726}
+  m_Layer: 7
   m_Name: Debuff_Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +163,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &769026814616852861
 MonoBehaviour:
@@ -178,9 +179,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 2.5
   impactDamage: 1
-  shotsPerSecond: 0.75
+  shotsPerSecond: 2
+  burnDamagePerTick: 2
+  burnDuration: 4
+  burnTickInterval: 0.5
   projectileSpeed: 7
-  projectileHitRadius: 0.2
+  projectileHitRadius: 0.25
   projectileHomingStrength: 0.2
   projectileMaxLifetime: 3
   enemyLayerMask:
@@ -204,3 +208,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 0}
   snapContinuouslyInEditor: 1
+--- !u!114 &3107546375585676726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4656153977336306372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f431a43429444d40b9141ebc81dc687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: f8ecf21d337ab814588f05d0ca29411e, type: 2}
+  currentLevel: 1
+  totalInvestedGold: 0

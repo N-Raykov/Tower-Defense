@@ -1,6 +1,7 @@
 // Handles spawning of multiple waves using EnemyWaveConfig assets
 // and integrates with GameManager game states.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,36 +17,48 @@ namespace TowerDefense.Managers
         [Tooltip("List of wave configurations in order.")]
         [SerializeField] private List<EnemyWaveConfig> waves = new List<EnemyWaveConfig>();
 
-        [Tooltip("Automatically start the first wave when the scene starts.")]
-        [SerializeField] private bool autoStartFirstWave = false;
-
         [Header("References")]
         [SerializeField] private LevelGrid levelGrid;
+
+        [Header("Rest Settings")]
+        [SerializeField] private float restDuration = 5f;
+
+        public float RestDuration => restDuration;
+
+        public float RestTimeRemaining { get; private set; }
+
+        private bool isInRestPeriod;
+
 
         private int currentWaveIndex = -1;
         private bool isSpawning;
 
+        public int CurrentWaveNumber => currentWaveIndex + 1;
+        public int TotalWaves => waves != null ? waves.Count : 0;
+
+        public event Action<int, int> OnWaveStarted;
+
+
         private void Start()
         {
-            if (levelGrid == null)
-            {
-                levelGrid = FindObjectOfType<LevelGrid>();
-            }
+            StartCoroutine(InitialRestThenFirstWave());
+        }
 
-            if (autoStartFirstWave && waves.Count > 0)
+
+        private void Update()
+        {
+            if (isInRestPeriod)
             {
-                StartNextWave();
+                RestTimeRemaining = Mathf.Max(0f, RestTimeRemaining - Time.deltaTime);
             }
         }
 
         public void StartNextWave()
         {
             if (isSpawning)
-            {
                 return;
-            }
 
-            if (waves.Count == 0)
+            if (waves == null || waves.Count == 0)
             {
                 Debug.LogWarning("WaveManager: No waves configured.");
                 return;
@@ -60,13 +73,63 @@ namespace TowerDefense.Managers
             currentWaveIndex++;
             EnemyWaveConfig waveConfig = waves[currentWaveIndex];
 
+            OnWaveStarted?.Invoke(CurrentWaveNumber, TotalWaves);
+
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.ChangeState(GameState.WaveInProgress);
             }
 
+            isSpawning = true;
             StartCoroutine(SpawnWaveCoroutine(waveConfig));
         }
+
+
+
+        public void ResetWaves()
+        {
+            StopAllCoroutines();
+
+            currentWaveIndex = -1;
+            isSpawning = false;
+            RestTimeRemaining = 0f;
+
+            StartCoroutine(InitialRestThenFirstWave());
+        }
+
+
+        private IEnumerator RestPhase()
+        {
+            RestTimeRemaining = restDuration;
+
+            float elapsed = 0f;
+            while (elapsed < restDuration)
+            {
+                yield return null;
+                elapsed += Time.deltaTime;
+                RestTimeRemaining = Mathf.Max(0f, restDuration - elapsed);
+            }
+
+            RestTimeRemaining = 0f;
+        }
+
+
+        private IEnumerator InitialRestThenFirstWave()
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ChangeState(GameState.BuildPhase);
+            }
+
+            if (restDuration > 0f)
+            {
+                yield return RestPhase();
+            }
+
+            StartNextWave();
+        }
+
+
 
         private IEnumerator SpawnWaveCoroutine(EnemyWaveConfig waveConfig)
         {
@@ -110,17 +173,32 @@ namespace TowerDefense.Managers
                 }
             }
 
-            // All enemies for this wave have been spawned.
-            // Wait until they are all gone (killed or reached goal).
             if (GameManager.Instance != null)
             {
                 yield return new WaitUntil(() => GameManager.Instance.ActiveEnemies == 0);
 
                 bool hasMoreWaves = currentWaveIndex < waves.Count - 1;
-                GameManager.Instance.HandleWaveCleared(hasMoreWaves);
+
+                isSpawning = false;
+
+                if (hasMoreWaves)
+                {
+                    GameManager.Instance.ChangeState(GameState.BuildPhase);
+
+                    yield return RestPhase();
+
+                    StartNextWave();
+                }
+                else
+                {
+                    GameManager.Instance.ChangeState(GameState.Victory);
+                }
+            }
+            else
+            {
+                isSpawning = false;
             }
 
-            isSpawning = false;
         }
     }
 }

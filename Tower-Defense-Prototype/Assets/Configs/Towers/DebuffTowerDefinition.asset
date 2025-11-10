@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 945b89eb96a13544eba49d46d8ab178f, type: 3}
+  m_Name: DebuffTowerDefinition
+  m_EditorClassIdentifier: 
+  towerName: Flame Thrower
+  description: Shoots blazing balls of flame igniting anything in their way.
+  icon: {fileID: -424794551, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  towerPrefab: {fileID: 4656153977336306372, guid: fea436b3ec97529488243d858de331f1, type: 3}
+  cost: 45
+  upgradeDefinition: {fileID: 11400000, guid: 899ef1ce94528294097a4485e752bcf1, type: 2}
+  upgradeCost: 25
+  range: 3
+  baseDamage: 1
+  shotsPerSecond: 2
+  specialEffect: DoT

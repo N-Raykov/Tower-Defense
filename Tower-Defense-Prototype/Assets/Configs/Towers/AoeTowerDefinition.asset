@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 945b89eb96a13544eba49d46d8ab178f, type: 3}
+  m_Name: AoeTowerDefinition
+  m_EditorClassIdentifier: 
+  towerName: Rocket Launcher
+  description: Fires devastatingly powerful rockets that explode on impact dealing
+    massive damage to all enemies nearby.
+  icon: {fileID: -310982374, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  towerPrefab: {fileID: 5555776437829691075, guid: 0f419874be90556409eaf25b96cf29d3, type: 3}
+  cost: 50
+  upgradeDefinition: {fileID: 11400000, guid: b065e7f66702ea44b8e81fb9ca8c6377, type: 2}
+  upgradeCost: 30
+  range: 3.5
+  baseDamage: 8
+  shotsPerSecond: 0.5
+  specialEffect: 

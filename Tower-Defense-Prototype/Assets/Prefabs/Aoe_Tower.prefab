@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7107990175164689330}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,8 @@ GameObject:
   - component: {fileID: 9058139022002384214}
   - component: {fileID: 1308864306287438055}
   - component: {fileID: 4131598087465290803}
-  m_Layer: 0
+  - component: {fileID: 9122219258662462523}
+  m_Layer: 7
   m_Name: Aoe_Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +163,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &1308864306287438055
 MonoBehaviour:
@@ -176,14 +177,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c54156c2f5ea6438256943e1f53d9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 3
+  range: 3.5
   shotsPerSecond: 0.5
   projectileSpeed: 5
-  projectileHitRadius: 0.25
+  projectileHitRadius: 0.35
   projectileHomingStrength: 0.8
   projectileMaxLifetime: 4
-  projectileExplosionRadius: 1.5
-  projectileExplosionDamage: 4
+  projectileExplosionRadius: 2
+  projectileExplosionDamage: 8
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -205,3 +206,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 0}
   snapContinuouslyInEditor: 1
+--- !u!114 &9122219258662462523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5555776437829691075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f431a43429444d40b9141ebc81dc687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 9a8c3311c096de546b6384400379612e, type: 2}
+  currentLevel: 1
+  totalInvestedGold: 0

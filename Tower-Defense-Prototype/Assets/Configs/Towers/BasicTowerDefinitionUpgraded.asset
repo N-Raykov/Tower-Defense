@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 945b89eb96a13544eba49d46d8ab178f, type: 3}
+  m_Name: BasicTowerDefinitionUpgraded
+  m_EditorClassIdentifier: 
+  towerName: Cannon
+  description: Quickly shoots single target projectiles at the first enemy detected.
+    Solid budget choice for your anti-material needs.
+  icon: {fileID: -1039299491, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  towerPrefab: {fileID: 2980307007554828115, guid: fda13ae372b720449aa1989df0e6e386, type: 3}
+  cost: 30
+  upgradeDefinition: {fileID: 0}
+  upgradeCost: 0
+  range: 2.5
+  baseDamage: 3
+  shotsPerSecond: 1
+  specialEffect: 

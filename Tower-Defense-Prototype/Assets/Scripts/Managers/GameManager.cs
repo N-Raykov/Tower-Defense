@@ -30,6 +30,14 @@ namespace TowerDefense.Managers
         [SerializeField] private int gold;
         [SerializeField] private int activeEnemies;
 
+        [Header("Game Speed")]
+        [SerializeField] private float currentGameSpeed = 1f;
+
+        public float CurrentGameSpeed => currentGameSpeed;
+
+        public event Action<float> OnGameSpeedChanged;
+
+        private GameState previousNonPausedState;
 
         public GameState CurrentState => currentState;
 
@@ -65,13 +73,28 @@ namespace TowerDefense.Managers
             gold = startingGold;
             activeEnemies = 0;
 
+            currentGameSpeed = 1f;
+            Time.timeScale = currentGameSpeed;
+
             OnLivesChanged?.Invoke(lives);
             OnGoldChanged?.Invoke(gold);
             OnActiveEnemiesChanged?.Invoke(activeEnemies);
 
-            ChangeState(currentState);
+            ChangeState(GameState.BuildPhase);
         }
 
+        public void SetGameSpeed(float speed)
+        {
+            // Clamp to a reasonable range
+            currentGameSpeed = Mathf.Clamp(speed, 0.1f, 4f);
+
+            if (currentState != GameState.Paused)
+            {
+                Time.timeScale = currentGameSpeed;
+            }
+
+            OnGameSpeedChanged?.Invoke(currentGameSpeed);
+        }
 
 
         public void ChangeState(GameState newState)
@@ -81,10 +104,79 @@ namespace TowerDefense.Managers
                 return;
             }
 
+            if (newState == GameState.Paused)
+            {
+                previousNonPausedState = currentState;
+            }
+
             currentState = newState;
+
+            if (currentState == GameState.Paused)
+            {
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                Time.timeScale = currentGameSpeed;
+            }
+
             OnGameStateChanged?.Invoke(currentState);
         }
 
+        public void ResumeFromPause()
+        {
+            if (currentState == GameState.Paused)
+            {
+                ChangeState(previousNonPausedState);
+            }
+        }
+
+        // ------------------------------------------------------------------------------
+        // RestartGame
+        // ------------------------------------------------------------------------------
+        public void RestartGame()
+        {
+            Debug.Log("Restarting game...");
+
+            // Reset time
+            Time.timeScale = 1f;
+            currentGameSpeed = 1f;
+
+            // Reset player stats
+            lives = startingLives;
+            gold = startingGold;
+
+            OnLivesChanged?.Invoke(lives);
+            OnGoldChanged?.Invoke(gold);
+
+            // Destroy all existing towers
+            var towersParent = GameObject.Find("Towers");
+            if (towersParent != null)
+            {
+                for (int i = towersParent.transform.childCount - 1; i >= 0; i--)
+                {
+                    Destroy(towersParent.transform.GetChild(i).gameObject);
+                }
+            }
+
+            foreach (var enemy in FindObjectsOfType<TowerDefense.Enemies.BasicEnemy>())
+            {
+                Destroy(enemy.gameObject);
+            }
+
+            activeEnemies = 0;
+            OnActiveEnemiesChanged?.Invoke(activeEnemies);
+
+            var waveManager = FindObjectOfType<TowerDefense.Managers.WaveManager>();
+            if (waveManager != null)
+            {
+                waveManager.ResetWaves();
+            }
+
+            ChangeState(GameState.BuildPhase);
+
+            Debug.Log("Game restarted to Wave 1.");
+        }
 
 
         public void AddGold(int amount)
