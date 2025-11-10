@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerName: Flame Thrower
   description: Shoots blazing balls of flame igniting anything in their way.
-  icon: {fileID: -424794551, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  icon: {fileID: 1729427082, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
   towerPrefab: {fileID: 4656153977336306372, guid: fea436b3ec97529488243d858de331f1, type: 3}
   cost: 45
   upgradeDefinition: {fileID: 11400000, guid: 899ef1ce94528294097a4485e752bcf1, type: 2}

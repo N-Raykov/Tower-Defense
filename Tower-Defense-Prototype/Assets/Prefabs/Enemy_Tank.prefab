@@ -255,6 +255,6 @@ MonoBehaviour:
   rewardGold: 10
   damageToBase: 2
   canBeBurned: 1
-  burnEffectPrefab: {fileID: 0}
+  burnEffectPrefab: {fileID: 8374766172305808368, guid: fcf4adac521d87b4e9f13d39de0ca913, type: 3}
   goldPopupPrefab: {fileID: 3911553569840963345, guid: 45b6077f438c69948bd7dddbae838529, type: 3}
   spriteRenderer: {fileID: 5255189851867036648}

@@ -143,6 +143,6 @@ MonoBehaviour:
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  explosionEffectPrefab: {fileID: 0}
+  explosionEffectPrefab: {fileID: 758321256525070176, guid: d2615d320bb2c324c96930d1a494c05d, type: 3}
   explosionEffectLifetime: 1
   rotationOffset: -90

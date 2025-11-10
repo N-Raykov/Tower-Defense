@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 7446057412339248567}
   - component: {fileID: 3107546375585676726}
   m_Layer: 7
-  m_Name: Debuff_Tower
+  m_Name: Debuff_Tower_Upgraded
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,7 +109,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1729427082, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  m_Sprite: {fileID: 1834283416, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -178,11 +178,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 2.5
-  impactDamage: 1
-  shotsPerSecond: 2
-  burnDamagePerTick: 2
-  burnDuration: 4
-  burnTickInterval: 0.8
+  impactDamage: 2
+  shotsPerSecond: 3
+  burnDamagePerTick: 4
+  burnDuration: 5
+  burnTickInterval: 0.5
   projectileSpeed: 7
   projectileHitRadius: 0.25
   projectileHomingStrength: 0.2

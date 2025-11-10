@@ -55,6 +55,13 @@ namespace TowerDefense.Managers
 
         public void StartNextWave()
         {
+            if (GameManager.Instance != null)
+            {
+                var state = GameManager.Instance.CurrentState;
+                if (state == GameState.GameOver || state == GameState.Victory)
+                    return;
+            }
+
             if (isSpawning)
                 return;
 
@@ -175,18 +182,34 @@ namespace TowerDefense.Managers
 
             if (GameManager.Instance != null)
             {
-                yield return new WaitUntil(() => GameManager.Instance.ActiveEnemies == 0);
+                // Wait until all enemies are gone OR game ends
+                yield return new WaitUntil(() =>
+                {
+                    var gm = GameManager.Instance;
+                    if (gm.CurrentState == GameState.GameOver || gm.CurrentState == GameState.Victory)
+                        return true;
+
+                    return gm.ActiveEnemies == 0;
+                });
+
+                // Once we get here, check the state again
+                var state = GameManager.Instance.CurrentState;
+                if (state == GameState.GameOver || state == GameState.Victory)
+                {
+                    // Do not start any further waves
+                    isSpawning = false;
+                    yield break;
+                }
 
                 bool hasMoreWaves = currentWaveIndex < waves.Count - 1;
 
+                // We are done spawning this wave; allow next wave to start.
                 isSpawning = false;
 
                 if (hasMoreWaves)
                 {
                     GameManager.Instance.ChangeState(GameState.BuildPhase);
-
                     yield return RestPhase();
-
                     StartNextWave();
                 }
                 else

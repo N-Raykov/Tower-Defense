@@ -30,7 +30,20 @@ namespace TowerDefense.UI
 
         private TowerInstance selectedTower;
         private Camera mainCamera;
+
         private GameManager gameManager;
+        private GameManager GM
+        {
+            get
+            {
+                if (gameManager == null)
+                {
+                    gameManager = GameManager.Instance;
+                }
+                return gameManager;
+            }
+        }
+
 
         private void Awake()
         {
@@ -55,19 +68,20 @@ namespace TowerDefense.UI
 
         private void OnEnable()
         {
-            if (gameManager != null)
+            if (GM != null)
             {
-                gameManager.OnGoldChanged += HandleGoldChanged;
+                GM.OnGoldChanged += HandleGoldChanged;
             }
         }
 
         private void OnDisable()
         {
-            if (gameManager != null)
+            if (GM != null)
             {
-                gameManager.OnGoldChanged -= HandleGoldChanged;
+                GM.OnGoldChanged -= HandleGoldChanged;
             }
         }
+
 
         public void SetSelectedTower(TowerInstance tower)
         {
@@ -124,7 +138,9 @@ namespace TowerDefense.UI
                 if (upgradeText != null)
                     upgradeText.text = $"Upgrade: {cost}";
 
-                bool enoughGold = gameManager != null && gameManager.Gold >= cost;
+                var gm = GM;
+                bool enoughGold = gm != null && gm.Gold >= cost;
+
                 if (upgradeButton != null)
                     upgradeButton.interactable = enoughGold;
             }
@@ -132,6 +148,7 @@ namespace TowerDefense.UI
             {
                 if (upgradeText != null)
                     upgradeText.text = "Upgrade: Max";
+
                 if (upgradeButton != null)
                     upgradeButton.interactable = false;
             }
@@ -147,7 +164,7 @@ namespace TowerDefense.UI
 
             // Offset panel to the right of the tower
             Vector3 offset = new Vector3(80f, 0f, 0f);
-            panelRoot.position = screenPos + offset;
+            panelRoot.anchoredPosition = screenPos + offset;
         }
 
         private void HandleGoldChanged(int gold)

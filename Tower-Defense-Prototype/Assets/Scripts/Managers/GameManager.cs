@@ -229,24 +229,56 @@ namespace TowerDefense.Managers
 
         public void DamageBase(int amount)
         {
-            if (amount < 0)
-            {
-                Debug.LogWarning("DamageBase called with negative amount.");
+            if (amount <= 0)
                 return;
-            }
+
+            // If we're already dead or finished, ignore further damage
+            if (currentState == GameState.GameOver || currentState == GameState.Victory)
+                return;
 
             lives -= amount;
-            if (lives < 0)
+
+            if (lives <= 0)
             {
                 lives = 0;
+                OnLivesChanged?.Invoke(lives);
+                HandleGameOver();
             }
-
-            OnLivesChanged?.Invoke(lives);
-
-            if (lives <= 0 && currentState != GameState.GameOver)
+            else
             {
-                ChangeState(GameState.GameOver);
+                OnLivesChanged?.Invoke(lives);
             }
+        }
+
+        private void HandleGameOver()
+        {
+            Debug.Log("GAME OVER");
+
+            ChangeState(GameState.GameOver);
+
+            var waveManager = FindObjectOfType<TowerDefense.Managers.WaveManager>();
+            if (waveManager != null)
+            {
+                waveManager.StopAllCoroutines();
+            }
+
+            foreach (var enemy in FindObjectsOfType<TowerDefense.Enemies.BasicEnemy>())
+            {
+                Destroy(enemy.gameObject);
+            }
+
+            activeEnemies = 0;
+            OnActiveEnemiesChanged?.Invoke(activeEnemies);
+
+            var towersParent = GameObject.Find("Towers");
+            if (towersParent != null)
+            {
+                for (int i = towersParent.transform.childCount - 1; i >= 0; i--)
+                {
+                    Destroy(towersParent.transform.GetChild(i).gameObject);
+                }
+            }
+
         }
 
 

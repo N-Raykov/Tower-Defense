@@ -15,10 +15,12 @@ MonoBehaviour:
   towerName: Rocket Launcher
   description: Fires devastatingly powerful rockets that explode on impact dealing
     massive damage to all enemies nearby.
-  icon: {fileID: -310982374, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
-  towerPrefab: {fileID: 5555776437829691075, guid: 0f419874be90556409eaf25b96cf29d3, type: 3}
+  icon: {fileID: -2140151797, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
+  towerPrefab: {fileID: 5555776437829691075, guid: bf7089bf7cf12094b9ba13fda71dc9f5, type: 3}
   cost: 50
+  upgradeDefinition: {fileID: 0}
+  upgradeCost: 0
   range: 3.5
   baseDamage: 8
-  shotsPerSecond: 0.5
+  shotsPerSecond: 0.8
   specialEffect: 

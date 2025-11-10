@@ -218,6 +218,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f431a43429444d40b9141ebc81dc687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: 9a8c3311c096de546b6384400379612e, type: 2}
+  definition: {fileID: 11400000, guid: 6bb3cc0ac1e880f4c95fb6d168f26b7d, type: 2}
   currentLevel: 1
   totalInvestedGold: 0

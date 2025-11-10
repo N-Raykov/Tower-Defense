@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Quickly shoots single target projectiles at the first enemy detected.
     Solid budget choice for your anti-material needs.
   icon: {fileID: -1039299491, guid: 48f619fe8bb2cde49b4c6bf05ab71f4f, type: 3}
-  towerPrefab: {fileID: 2980307007554828115, guid: fda13ae372b720449aa1989df0e6e386, type: 3}
+  towerPrefab: {fileID: 2980307007554828115, guid: 8c7f88ca0d7ad2145843e89ad0436eaf, type: 3}
   cost: 30
   upgradeDefinition: {fileID: 0}
   upgradeCost: 0
